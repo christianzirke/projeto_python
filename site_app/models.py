@@ -11,7 +11,7 @@ class Company(models.Model):
 	def __str__(self):
 		return self.name
 
-	def getActualShare(self):
+	def getActualStock(self):
 		try:
 			return self.shares.latest(field_name="date")
 		except CompanyShareValue.DoesNotExist:
@@ -25,10 +25,17 @@ class Person(models.Model):
         def __str__(self):
                 return "%s %s" %(self.first_name, self.last_name)
 
-class CompanyShareValue(models.Model):
-	company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="shares")
+class CompanyStockValue(models.Model):
+	company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="stocks")
 	value = models.FloatField()
-	date = models.DateTimeField()
+	date = models.DateTimeField(auto_now_add=True)
+	previous = models.OneToOneField('self')
+	def getIncrement(self):
+		return self.value - self.previous.value
+	def getPercentIncrement(self):
+		if self.previous:
+			return self.getIncrement() / self.previous.value
+		return 0
 	def __str__(self):
 		date_str = self.date.strftime('%d/%m/%Y %H:%M')
 		return "%s - %.2f at %s" %(self.company.name, self.value, date_str)
