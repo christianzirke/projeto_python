@@ -1,0 +1,12 @@
+<h1 style='display:block;color:lightblue'>
+{{company.name}}
+</h1>
+<div>
+<h3>WIKI:</h3>
+{% if company.wikipedia %}
+{{wiki_description}} <br>
+<a href="{{ wiki_url }}">READ MORE</a>
+{% else %}
+Nao tem wiki
+{% endif %}
+</div>

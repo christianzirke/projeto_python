@@ -7,9 +7,17 @@ from django.db import models
 
 class Company(models.Model):
 	name = models.CharField(max_length=30, blank=False)
-	logo = models.FileField()
+	logo = models.ImageField()
+	wikipedia = models.CharField(max_length=300, blank=True)
 	def __str__(self):
 		return self.name
+
+	def getWikiName(self):
+		if not self.wikipedia:
+			return None
+
+		last_index = self.wikipedia.rfind("/")
+		return self.wikipedia[last_index+1:]
 
 	def getActualStock(self):
 		try:
