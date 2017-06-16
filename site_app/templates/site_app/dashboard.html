@@ -1,0 +1,9 @@
+{% load company_details %}
+<html>
+<head></head>
+<body>
+  {% for company in user.companies.all %}
+    {% company_small_details company  %}
+  {% endfor %}
+</body>
+</html>
