@@ -42,8 +42,8 @@ class CompanyStockValue(models.Model):
 class Person(models.Model):
 	first_name = models.CharField(max_length=30, blank=False)
 	last_name = models.CharField(max_length=30, blank=False)
-	password = models.chartField(max_length=256, blank=False)
+	password = models.CharField(max_length=256, blank=False)
 	mail = models.CharField(max_length=40, blank=False)
 	companies = models.ManyToManyField(Company, related_name="persons")
 	def __str__(self):
-		return "%s %s" %(self.first_name, self.last_name))
+		return "%s %s" %(self.first_name, self.last_name)
