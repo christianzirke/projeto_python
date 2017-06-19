@@ -2,8 +2,10 @@
 <html>
 <head></head>
 <body>
+  {{user}}
   {% for company in user.companies.all %}
     {% company_small_details company  %}
+    <br><br>
   {% endfor %}
 </body>
 </html>
