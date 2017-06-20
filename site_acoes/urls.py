@@ -1,5 +1,4 @@
 """site_acoes URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
 Examples:
@@ -17,6 +16,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^app/', include('site_app.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('site_app.urls')),
 ]

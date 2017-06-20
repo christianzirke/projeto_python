@@ -16,11 +16,11 @@ class Company(models.Model):
 		last_index = self.wikipedia.rfind("/")
 		return self.wikipedia[last_index+1:]
 
-		def getActualStock(self):
-			try:
-				return self.stocks.latest(field_name="date")
-			except CompanyStockValue.DoesNotExist:
-				return None
+	def getActualStock(self):
+		try:
+			return self.stocks.latest(field_name="date")
+		except CompanyStockValue.DoesNotExist:
+			return None
 
 class CompanyStockValue(models.Model):
 	company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="stocks")
@@ -39,11 +39,11 @@ class CompanyStockValue(models.Model):
 		date_str = self.date.strftime('%d/%m/%Y %H:%M')
 		return "%s - %.2f at %s" %(self.company.name, self.value, date_str)
 
-class Person(models.Model):
+class User(models.Model):
 	first_name = models.CharField(max_length=30, blank=False)
 	last_name = models.CharField(max_length=30, blank=False)
 	password = models.CharField(max_length=256, blank=False)
-	mail = models.CharField(max_length=40, blank=False)
-	companies = models.ManyToManyField(Company, related_name="persons")
+	email = models.CharField(max_length=40, blank=False)
+	companies = models.ManyToManyField(Company, related_name="users")
 	def __str__(self):
 		return "%s %s" %(self.first_name, self.last_name)
