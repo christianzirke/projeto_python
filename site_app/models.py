@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User as DjangoUser
 from django.db import models
 
 class Company(models.Model):
@@ -28,7 +29,9 @@ class CompanyStockValue(models.Model):
 	date = models.DateTimeField(auto_now_add=True)
 	previous = models.OneToOneField('self', blank=True, null=True)
 	def getIncrement(self):
-		return self.value - self.previous.value
+		if self.previous:
+			return self.value - self.previous.value
+		return 0
 
 	def getPercentIncrement(self):
 		if self.previous:
@@ -45,5 +48,6 @@ class User(models.Model):
 	password = models.CharField(max_length=256, blank=False)
 	email = models.CharField(max_length=40, blank=False)
 	companies = models.ManyToManyField(Company, related_name="users")
+	django_user = models.OneToOneField(DjangoUser, on_delete=models.CASCADE)
 	def __str__(self):
 		return "%s %s" %(self.first_name, self.last_name)
