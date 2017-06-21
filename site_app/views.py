@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.auth import logout
+from django import forms
+
+from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User as DjangoUser
 
 from django.shortcuts import render, get_object_or_404
 
 from django.template import loader
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 
 from .models import Company, User
 from .forms import UserRegistrationForm
@@ -30,27 +33,35 @@ def company_details(request, company_id):
 
 @login_required
 def dashboard(request):
+	user = request.user.user
 	return render(request, 'site_app/dashboard.html', {"user": request.user})
 
 def register(request):
-    if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            userObj = form.cleaned_data
-            email =  userObj['email']
-            password =  userObj['password']
-            if not (User.objects.filter(email=email).exists()):
-                User.objects.create_user(username, email, password)
-                user = authenticate(username = username, password = password)
-                login(request, user)
-                return HttpResponseRedirect('/')
-            else:
-                raise forms.ValidationError('Email already registered')
+	if request.method == 'POST':
+		form = UserRegistrationForm(request.POST)
+		if form.is_valid():
+			userObj = form.cleaned_data
+			username = userObj['username']
+			email =  userObj['email']
+			password = userObj['password']
+			if not (DjangoUser.objects.filter(username=username).exists() or DjangoUser.objects.filter(email=email).exists()):
+				dj_user = DjangoUser.objects.create_user(username, email, password)
+				User.objects.create(django_user=dj_user)
+				user = authenticate(username = username, password = password)
+				login(request, user)
+				return HttpResponseRedirect('/')
+			else:
+				raise forms.ValidationError('Email already registered')
 
-    else:
-        form = UserRegistrationForm()
+	else:
+		form = UserRegistrationForm()
+	return render(request, 'registration/register.html', {'form' : form})
 
-    return render(request, 'registration/register.html', {'form' : form})
-
-def logout(request):
-	logout(request)
+def login(request):
+	if (request.user.is_authenticated):
+		return HttpResponseRedirect('/')
+	if request.method == 'POST':
+		user = authenticate(username = username, password = password)
+		login(request, user)
+		return HttpResponseRedirect('/')		
+	return render(request, 'registration/login.html')
