@@ -5,8 +5,16 @@
   {{user}}
   {% for company in user.companies.all %}
     {% company_small_details company  %}
+    <input type="submit" value="Unfollow" onclick="window.location='/unfollow_company/{{company.id}}/';" />
     <br><br>
   {% endfor %}
+  {% for company in companies.all %}
+    {{company}}
+    <input type="submit" value="Follow" onclick="window.location='/follow_company/{{company.id}}/';" />
+    <br><br>
+  {% endfor %}
+  <a href="follow_company/1">Follow</a>
+  <a href="unfollow_company/1">Unfollow</a>
   <a href="logout/">Logout</a>
 </body>
 </html>

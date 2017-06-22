@@ -44,6 +44,6 @@ class CompanyStockValue(models.Model):
 
 class User(models.Model):
 	companies = models.ManyToManyField(Company, related_name="users")
-	django_user = models.OneToOneField(DjangoUser, on_delete=models.CASCADE)
+	django_user = models.OneToOneField(DjangoUser, related_name="site_user", on_delete=models.CASCADE)
 	def __str__(self):
 		return "%s %s" %(self.django_user.first_name, self.django_user.last_name)

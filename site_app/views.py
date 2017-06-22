@@ -33,8 +33,9 @@ def company_details(request, company_id):
 
 @login_required
 def dashboard(request):
-	user = request.user.user
-	return render(request, 'site_app/dashboard.html', {"user": request.user})
+	user = request.user.site_user
+	companies = Company.objects.exclude(pk__in=user.companies.all())
+	return render(request, 'site_app/dashboard.html', {"user": request.user.site_user, "companies": companies})
 
 def register(request):
 	if request.method == 'POST':
@@ -57,11 +58,14 @@ def register(request):
 		form = UserRegistrationForm()
 	return render(request, 'registration/register.html', {'form' : form})
 
-def login(request):
-	if (request.user.is_authenticated):
-		return HttpResponseRedirect('/')
-	if request.method == 'POST':
-		user = authenticate(username = username, password = password)
-		login(request, user)
-		return HttpResponseRedirect('/')		
-	return render(request, 'registration/login.html')
+@login_required
+def follow_company(request, company_id):
+	request.user.site_user.companies.add(company_id)
+	request.user.site_user.save()
+	return HttpResponseRedirect('/')
+
+@login_required
+def unfollow_company(request, company_id):
+	request.user.site_user.companies.remove(company_id)
+	request.user.site_user.save()
+	return HttpResponseRedirect('/')
