@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = "login/"
+LOGIN_URL = "/login/"
 # Application definition
 
 INSTALLED_APPS = [
@@ -85,6 +85,12 @@ DATABASES = {
     	'PORT': '5433',
     }
 }
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'AQUI_VAI_SEU_EMAIL'
+EMAIL_HOST_PASSWORD = 'AQUI_VAI_SUA_SENHA'
+EMAIL_PORT = 587
 
 
 # Password validation
