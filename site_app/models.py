@@ -11,11 +11,11 @@ class Company(models.Model):
 	def __str__(self):
 		return self.name
 
-	# def getActualStock(self):
-		# try:
-		# 	return self.stocks.latest(field_name="date")
-		# except CompanyStockValue.DoesNotExist:
-		# 	return None
+	def getActualStock(self):
+		try:
+			return self.stocks.latest(field_name="date")
+		except CompanyStockValue.DoesNotExist:
+			return None
 
 class CompanyStockValue(models.Model):
 	company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="stocks")
