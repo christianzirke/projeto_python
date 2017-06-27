@@ -6,22 +6,16 @@ from django.db import models
 
 class Company(models.Model):
 	name = models.CharField(max_length=30, blank=False)
-	logo = models.ImageField()
-	wikipedia = models.CharField(max_length=300, blank=True)
+	logo = models.CharField(max_length=210, blank=False)
+	nasdaq = models.CharField(max_length=10, blank=False)
 	def __str__(self):
 		return self.name
 
-	def getWikiName(self):
-		if not self.wikipedia:
-			return None
-		last_index = self.wikipedia.rfind("/")
-		return self.wikipedia[last_index+1:]
-
-	def getActualStock(self):
-		try:
-			return self.stocks.latest(field_name="date")
-		except CompanyStockValue.DoesNotExist:
-			return None
+	# def getActualStock(self):
+		# try:
+		# 	return self.stocks.latest(field_name="date")
+		# except CompanyStockValue.DoesNotExist:
+		# 	return None
 
 class CompanyStockValue(models.Model):
 	company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="stocks")

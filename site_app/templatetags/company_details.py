@@ -6,8 +6,10 @@ register = template.Library()
 def company_small_details(company):
     return {
         "name": company.name,
-        "actual_stock": company.getActualStock().value,
-        "stock_change": company.getActualStock().getPercentIncrement(),
+        # "actual_stock": company.getActualStock().value,
+        "actual_stock": 0,
+        # "stock_change": company.getActualStock().getPercentIncrement(),
+        "stock_change": 0,
         "id": company.id,
-        "batata": "Batata"
+        "logo": company.logo
     }

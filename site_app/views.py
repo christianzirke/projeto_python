@@ -7,6 +7,8 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User as DjangoUser
 
+from django.views.decorators.csrf import csrf_exempt
+
 from django.shortcuts import render, get_object_or_404
 
 from django.template import loader
@@ -57,6 +59,18 @@ def register(request):
 	else:
 		form = UserRegistrationForm()
 	return render(request, 'registration/register.html', {'form' : form})
+
+@csrf_exempt
+def include_company(request):
+	data = request.POST
+	print ""
+	print data["name"]
+	print data["logo"]
+	print data["nasdaq"]
+	print ""
+	Company.objects.create(name=data["name"], nasdaq=data["nasdaq"], logo=data["logo"])
+
+	return None
 
 @login_required
 def follow_company(request, company_id):
