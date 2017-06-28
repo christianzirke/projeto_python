@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.models import User as DjangoUser
 from django.db import models
+import datetime
 
 class Company(models.Model):
 	name = models.CharField(max_length=30, blank=False)
@@ -20,7 +21,7 @@ class Company(models.Model):
 class CompanyStockValue(models.Model):
 	company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="stocks")
 	value = models.FloatField()
-	date = models.DateTimeField(auto_now_add=True)
+	date = models.DateTimeField(default=datetime.datetime.now())
 	previous = models.OneToOneField('self', blank=True, null=True)
 	def getIncrement(self):
 		if self.previous:

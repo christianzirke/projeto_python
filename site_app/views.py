@@ -19,7 +19,10 @@ from .forms import UserRegistrationForm
 
 import urllib
 
-from googlefinance import getQuotes
+from pandas_datareader import data as pandata;
+import datetime
+
+# from googlefinance import getQuotes
 
 @login_required
 def company_details(request, company_id):
@@ -65,9 +68,27 @@ def register(request):
 def include_company(request):
 	data = request.POST
 	company = Company.objects.create(name=data["name"], nasdaq=data["nasdaq"], logo=data["logo"])
-	share = getQuotes(data["nasdaq"])
-	share = share[0]
-	stock_value = CompanyStockValue.objects.create(company=company, value=share["LastTradePrice"], date=share["LastTradeDateTime"], previous=None)
+
+	start = datetime.datetime(2017, 1, 1)
+	end = datetime.date.today()
+
+	share_data = pandata.DataReader(data["nasdaq"], "google", start, end)
+	share_data.reset_index(inplace=True,drop=False)
+
+	previous = None
+
+	for i in range(len(share_data)):
+		start_date = share_data["Date"][i]
+		open_date = datetime.datetime.combine(start_date, datetime.time(9, 30))
+		close_date = datetime.datetime.combine(start_date, datetime.time(16))
+		print open_date
+		print close_date
+		previous = CompanyStockValue.objects.create(company=company, value=share_data["Open"][i], date=open_date, previous=previous)
+		previous = CompanyStockValue.objects.create(company=company, value=share_data["Close"][i], date=close_date, previous=previous)
+
+	# share = getQuotes(data["nasdaq"])
+	# share = share[0]
+	# stock_value = CompanyStockValue.objects.create(company=company, value=share["LastTradePrice"], date=share["LastTradeDateTime"], previous=None)
 
 	return None
 
