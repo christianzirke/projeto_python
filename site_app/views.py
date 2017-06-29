@@ -22,8 +22,6 @@ import urllib
 from pandas_datareader import data as pandata;
 import datetime
 
-# from googlefinance import getQuotes
-
 @login_required
 def company_details(request, company_id):
 	company = get_object_or_404(Company, pk=company_id)
@@ -50,16 +48,17 @@ def register(request):
 			userObj = form.cleaned_data
 			username = userObj['username']
 			email =  userObj['email']
+			first_name =  userObj['first_name']
+			last_name =  userObj['last_name']
 			password = userObj['password']
 			if not (DjangoUser.objects.filter(username=username).exists() or DjangoUser.objects.filter(email=email).exists()):
-				dj_user = DjangoUser.objects.create_user(username, email, password)
+				dj_user = DjangoUser.objects.create_user(username, email, password, first_name = first_name, last_name = last_name)
 				User.objects.create(django_user=dj_user)
 				user = authenticate(username = username, password = password)
 				login(request, user)
 				return HttpResponseRedirect('/')
 			else:
-				raise forms.ValidationError('Email already registered')
-
+				raise forms.ValidationError('Email or username already registered')
 	else:
 		form = UserRegistrationForm()
 	return render(request, 'registration/register.html', {'form' : form})
@@ -81,14 +80,8 @@ def include_company(request):
 		start_date = share_data["Date"][i]
 		open_date = datetime.datetime.combine(start_date, datetime.time(9, 30))
 		close_date = datetime.datetime.combine(start_date, datetime.time(16))
-		print open_date
-		print close_date
 		previous = CompanyStockValue.objects.create(company=company, value=share_data["Open"][i], date=open_date, previous=previous)
 		previous = CompanyStockValue.objects.create(company=company, value=share_data["Close"][i], date=close_date, previous=previous)
-
-	# share = getQuotes(data["nasdaq"])
-	# share = share[0]
-	# stock_value = CompanyStockValue.objects.create(company=company, value=share["LastTradePrice"], date=share["LastTradeDateTime"], previous=None)
 
 	return None
 

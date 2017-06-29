@@ -1,0 +1,36 @@
+body {
+  border: 1px inset black;
+  background-color: #ededed;
+  height: 100%;
+}
+.following {
+  width: 80%;
+  margin: auto;
+}
+.small-company {
+  float: right;
+}
+img.small-logo {
+  width: 3em;
+}
+.hide {
+  display: none;
+}
+.div-username {
+  float: right;
+  width: 10em;
+}
+.header {
+  display: block;
+  height: 10em;
+  margin: auto;
+  width: 80%;
+}
+.header label{
+  float: right;
+  color: blue;
+  font-size: 2em;
+}
+.header a{
+  float: right;
+}
