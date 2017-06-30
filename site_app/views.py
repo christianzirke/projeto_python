@@ -17,6 +17,8 @@ from django.http import Http404, HttpResponseRedirect
 from .models import Company, User, CompanyStockValue
 from .forms import UserRegistrationForm
 
+from .utils import CompanyUtils
+
 import urllib
 
 from pandas_datareader import data as pandata;
@@ -25,14 +27,7 @@ import datetime
 @login_required
 def company_details(request, company_id):
 	company = get_object_or_404(Company, pk=company_id)
-	text = None
-	# if wiki_url:
-	# 	text = urllib.urlopen(wiki_url).read()
-	# 	print text
-	 # 	idx = text.find('<table class="infobox')
-	# 	text = text[idx:]
-	# 	text = text[:text.find('</table>') + 8]
-	# 	print text
+	CompanyUtils.updateShares(company)
 	return render(request, 'site_app/company_details.html', {"company": company})
 
 @login_required
@@ -40,7 +35,7 @@ def dashboard(request):
 	user = request.user.site_user
 	companies = Company.objects.exclude(pk__in=user.companies.all())
 	return render(request, 'site_app/dashboard.html', {"user": request.user.site_user, "companies": companies})
-
+	
 def register(request):
 	if request.method == 'POST':
 		form = UserRegistrationForm(request.POST)
@@ -67,23 +62,9 @@ def register(request):
 def include_company(request):
 	data = request.POST
 	company = Company.objects.create(name=data["name"], nasdaq=data["nasdaq"], logo=data["logo"])
+	CompanyUtils.updateShares(company)
 
-	start = datetime.datetime(2017, 1, 1)
-	end = datetime.date.today()
-
-	share_data = pandata.DataReader(data["nasdaq"], "google", start, end)
-	share_data.reset_index(inplace=True,drop=False)
-
-	previous = None
-
-	for i in range(len(share_data)):
-		start_date = share_data["Date"][i]
-		open_date = datetime.datetime.combine(start_date, datetime.time(9, 30))
-		close_date = datetime.datetime.combine(start_date, datetime.time(16))
-		previous = CompanyStockValue.objects.create(company=company, value=share_data["Open"][i], date=open_date, previous=previous)
-		previous = CompanyStockValue.objects.create(company=company, value=share_data["Close"][i], date=close_date, previous=previous)
-
-	return None
+	return HttpResponseRedirect('/')
 
 @login_required
 def follow_company(request, company_id):
