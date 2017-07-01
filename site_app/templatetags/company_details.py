@@ -1,22 +1,20 @@
 from django import template
-from googlefinance import getQuotes
+from ..utils import CompanyUtils
 
 register = template.Library()
 
 @register.inclusion_tag('site_app/company_small_details.html')
 def company_small_details(company):
-    shares = getQuotes(company.nasdaq)
-    for a in shares:
-        print a;
-        print;
-    share = shares[0]
-    print share
+    actual_stock = CompanyUtils.getActualStock([company.nasdaq])
+    previous = company.getActualStock().value
+    print actual_stock
+    print previous
+    print
     return {
         "name": company.name,
-        "actual_stock": share["LastTradePrice"],
-        # "actual_stock": 0,
-        # "stock_change": company.getActualStock().getPercentIncrement(),
-        "stock_change": 0,
+        # em array ele puxa da NASDAQ, soh o valor ele puxa da NYSE. pq????????
+        "actual_stock": actual_stock,
+        "stock_change": CompanyUtils.getPercentIncrement(actual_stock, previous),
         "id": company.id,
         "logo": company.logo
     }

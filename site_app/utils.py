@@ -1,4 +1,5 @@
 import datetime
+from googlefinance import getQuotes
 from pandas_datareader import data as pandata
 from .models import CompanyStockValue
 
@@ -26,3 +27,22 @@ class CompanyUtils(object):
             close_date = datetime.datetime.combine(start_date, datetime.time(16))
             previous = CompanyStockValue.objects.create(company=company, value=share_data["Open"][i], date=open_date, previous=previous)
             previous = CompanyStockValue.objects.create(company=company, value=share_data["Close"][i], date=close_date, previous=previous)
+
+    @staticmethod
+    def getActualStock(companies):
+        stocks = {}
+        quotes = getQuotes(companies)
+        for quote in quotes:
+            if quote["Index"] == "NASDAQ":
+                return float(quote["LastTradePrice"])
+        return 0
+
+    @staticmethod
+    def getPercentIncrement(actual_value, previous_value):
+        print
+        print type(actual_value)
+        print type(previous_value)
+        print
+        if actual_value and previous_value:
+            diff = actual_value - previous_value
+            return round((diff * 100) / previous_value, 2)
