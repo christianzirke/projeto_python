@@ -35,7 +35,7 @@ def dashboard(request):
 	user = request.user.site_user
 	companies = Company.objects.exclude(pk__in=user.companies.all())
 	return render(request, 'site_app/dashboard.html', {"user": request.user.site_user, "companies": companies})
-	
+
 def register(request):
 	if request.method == 'POST':
 		form = UserRegistrationForm(request.POST)
@@ -61,9 +61,7 @@ def register(request):
 @csrf_exempt
 def include_company(request):
 	data = request.POST
-	company = Company.objects.create(name=data["name"], nasdaq=data["nasdaq"], logo=data["logo"])
-	CompanyUtils.updateShares(company)
-
+	CompanyUtils.createCompany(data);
 	return HttpResponseRedirect('/')
 
 @login_required

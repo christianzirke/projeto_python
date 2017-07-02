@@ -1,9 +1,15 @@
 import datetime
+import json
 from googlefinance import getQuotes
 from pandas_datareader import data as pandata
-from .models import CompanyStockValue
+from .models import Company, CompanyStockValue
 
 class CompanyUtils(object):
+    @staticmethod
+    def createCompany(data):
+        company = Company.objects.create(name=data["name"], nasdaq=data["nasdaq"], logo=data["logo"], wikipedia=json.dumps(data["wikipedia"]))
+    	CompanyUtils.updateShares(company)
+
     @staticmethod
     def updateShares(company):
         stock = company.getActualStock()

@@ -9,6 +9,7 @@ class Company(models.Model):
 	name = models.CharField(max_length=30, blank=False)
 	logo = models.CharField(max_length=210, blank=False)
 	nasdaq = models.CharField(max_length=10, blank=False)
+	wikipedia = models.TextField(blank=False)
 	def __str__(self):
 		return self.name
 

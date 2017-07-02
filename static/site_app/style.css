@@ -1,7 +1,25 @@
 body {
-  border: 1px inset black;
-  background-color: #ededed;
   height: 100%;
+}
+.line {
+  width: 70%;
+  text-align: center;
+  /*padding: 1em;*/
+}
+.line label {
+  min-width: 1em;
+}
+.login-body {
+  background-color: lightgreen;
+}
+.login-body form{
+  margin: auto;
+  width: 40%
+}
+.login-body form button {
+  margin: auto;
+  margin-top: 1em;
+  width: 100%;
 }
 .following {
   width: 80%;
