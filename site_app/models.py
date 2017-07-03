@@ -38,6 +38,12 @@ class CompanyStockValue(models.Model):
 		date_str = self.date.strftime('%d/%m/%Y %H:%M')
 		return "%s - %.2f at %s" %(self.company.name, self.value, date_str)
 
+class CompanyNews(models.Model):
+	company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="news")
+	date = models.DateTimeField(default=datetime.datetime.now())
+	headline_link = models.TextField(blank=False)
+	headline_text = models.TextField(blank=False)
+
 class User(models.Model):
 	companies = models.ManyToManyField(Company, related_name="users")
 	django_user = models.OneToOneField(DjangoUser, related_name="site_user", on_delete=models.CASCADE)

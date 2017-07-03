@@ -2,22 +2,31 @@
 import scrapy
 import wikipedia
 import json
-from wiki_bot.items import WikiBotItem
+import requests
+from site_app_scraper.items import WikiBotItem
 
-class InfoboxSpiderSpider(scrapy.Spider):
-    name = "wiki_cisco"
-    allowed_domains = ["https://en.wikipedia.org/wiki/Cisco_Systems"]
+class WikiSpider(scrapy.Spider):
+    name = "wiki_spider"
+    allowed_domains = ["https://en.wikipedia.org"]
     start_urls = (
-        'https://en.wikipedia.org/wiki/Cisco_Systems',
+        'https://en.wikipedia.org/wiki/',
     )
 
     def parse_en(self, response):
         item = WikiBotItem()
         infobox = response.xpath("//table[contains(@class, 'infobox')]")
         item["name"] = infobox.xpath("./caption/text()").extract_first().strip()
-        item["logo"] = infobox.xpath("./tr/td[contains(@class, 'logo')]/a[contains(@class, 'image')]/img/@src").extract_first().strip()
-        item["nasdaq"] = infobox.xpath(".//li/a[@title='NASDAQ']/../a[2]/text()").extract_first().strip()
-        item["wikipedia"] = {"link": "https://en.wikipedia.org/wiki/Cisco_Systems"}
+
+        logo = infobox.xpath("./tr/td/a[contains(@class, 'image')]/img/@src")
+        if not logo:
+            logo = "https://pbs.twimg.com/media/CdlFCYmXIAAGkiH.jpg"
+        else:
+            logo = logo.extract_first().strip()
+            
+        item["logo"] = logo
+
+        item["nasdaq"] = infobox.xpath(".//a[contains(@href, 'http://www.nasdaq.com/symbol/')]/text()").extract_first().strip()
+        item["wikipedia"] = {"link": response.url}
         for tr in response.xpath("//table[contains(@class, 'infobox')]/tr"):
             table_head = tr.xpath("./th/text()").extract_first()
             table_content = tr.xpath("./td").extract_first()
@@ -26,8 +35,10 @@ class InfoboxSpiderSpider(scrapy.Spider):
 
         item["wikipedia"]["summary"] = wikipedia.summary(item["name"], sentences=2)
         item["wikipedia"] = json.dumps(item["wikipedia"])
-        return item
+        yield item
 
     def parse(self, response):
-        item = self.parse_en(response)
-        yield item
+        request = requests.get("http://localhost:8000/get_companies_wikis")
+        urls = request.json()
+        for url in urls:
+            yield scrapy.Request(url, callback = self.parse_en, dont_filter=True)

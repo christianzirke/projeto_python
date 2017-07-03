@@ -5,6 +5,9 @@ from django.contrib.auth import views as auth_views
 from .import views
 
 urlpatterns = [
+    url(r'^get_companies_codes/?$', views.get_companies_codes),
+    url(r'^get_companies_wikis/?$', views.get_companies_wikis),
+    url(r'^include_news/$', views.include_news),
     url(r'^include_company/$', views.include_company),
     url(r'^login/$', auth_views.login),
     url(r'^logout/$', auth_views.logout,   {'next_page': '/'}),

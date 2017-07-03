@@ -1,6 +1,12 @@
+{% extends "site_app/base.html" %}
+{% load wikipedia %}
+
+{% block content %}
 <h1 style='display:block;color:lightblue'>
 {{company.name}}
 </h1>
 <img src="{{company.logo}}">
 <div>
+    {% wikipedia company  %}
 </div>
+{% endblock %}

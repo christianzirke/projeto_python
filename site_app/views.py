@@ -2,27 +2,18 @@
 from __future__ import unicode_literals
 
 from django import forms
-
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User as DjangoUser
-
 from django.views.decorators.csrf import csrf_exempt
-
 from django.shortcuts import render, get_object_or_404
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 
-from django.template import loader
-from django.http import Http404, HttpResponseRedirect
-
-from .models import Company, User, CompanyStockValue
+from .models import Company, User, CompanyNews
 from .forms import UserRegistrationForm
-
 from .utils import CompanyUtils
 
-import urllib
-
-from pandas_datareader import data as pandata;
-import datetime
+import json
 
 @login_required
 def company_details(request, company_id):
@@ -62,7 +53,51 @@ def register(request):
 def include_company(request):
 	data = request.POST
 	CompanyUtils.createCompany(data);
-	return HttpResponseRedirect('/')
+	return HttpResponse()
+
+@csrf_exempt
+def include_news(request):
+	data = request.POST
+	CompanyNews.objects.create(
+		date=data["date"],
+		headline_text=data["headline_text"],
+		headline_link=data["headline_link"],
+		company=Company.objects.get(pk=int(data["company"]))
+	);
+	return HttpResponse()
+
+@csrf_exempt
+def get_companies_codes(request):
+	codes = {}
+	for company in Company.objects.all():
+		codes[company.id] = company.nasdaq
+	return HttpResponse(json.dumps(codes))
+
+@csrf_exempt
+def get_companies_wikis(request):
+	wikis = [
+		"https://en.wikipedia.org/wiki/Cisco_Systems",
+		"https://en.wikipedia.org/wiki/Apple_Inc.",
+		"https://en.wikipedia.org/wiki/Qualcomm",
+		"https://en.wikipedia.org/wiki/Nvidia",
+		"https://en.wikipedia.org/wiki/Microsoft",
+		"https://en.wikipedia.org/wiki/Intel",
+		"https://en.wikipedia.org/wiki/21st_Century_Fox",
+		"https://en.wikipedia.org/wiki/Comcast",
+		"https://en.wikipedia.org/wiki/Micron_Technology",
+		"https://en.wikipedia.org/wiki/Facebook",
+		"https://en.wikipedia.org/wiki/Marvell_Technology_Group",
+		"https://en.wikipedia.org/wiki/Ascena_Retail_Group",
+		"https://en.wikipedia.org/wiki/Zynga",
+		"https://en.wikipedia.org/wiki/Sirius_XM_Holdings",
+		"https://en.wikipedia.org/wiki/Applied_Materials",
+		"https://en.wikipedia.org/wiki/JD.com",
+		"https://en.wikipedia.org/wiki/PayPal",
+		"https://en.wikipedia.org/wiki/Nutanix",
+		"https://en.wikipedia.org/wiki/Splunk",
+		"https://en.wikipedia.org/wiki/Groupon",
+	]
+	return HttpResponse(json.dumps(wikis))
 
 @login_required
 def follow_company(request, company_id):
