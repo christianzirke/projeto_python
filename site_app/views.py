@@ -58,12 +58,14 @@ def include_company(request):
 @csrf_exempt
 def include_news(request):
 	data = request.POST
-	CompanyNews.objects.create(
-		date=data["date"],
-		headline_text=data["headline_text"],
-		headline_link=data["headline_link"],
-		company=Company.objects.get(pk=int(data["company"]))
-	);
+	exists = CompanyNews.objects.filter(company=int(data["company"]), date=data["date"], headline_link=data["headline_link"], headline_text=data["headline_text"]).exists()
+	if not exists:
+		CompanyNews.objects.create(
+			date=data["date"],
+			headline_text=data["headline_text"],
+			headline_link=data["headline_link"],
+			company=Company.objects.get(pk=int(data["company"]))
+		);
 	return HttpResponse()
 
 @csrf_exempt

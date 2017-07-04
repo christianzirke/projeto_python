@@ -1,6 +1,7 @@
 
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+from utils import PeriodicThread
 
 from .import views
 
@@ -22,3 +23,31 @@ urlpatterns = [
     url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
     url(r'^$', views.dashboard),
 ]
+
+# RUN SCRAPERS, RUN
+
+from scrapyd_api import ScrapydAPI
+from .models import Company
+
+spider_id = None
+
+def news_loop():
+    scrapyd.schedule('default', 'news_spider')
+
+def check_finished():
+    status = scrapyd.job_status("default", spider_id)
+    if status is "finished" or not status:
+        thread.cancel()
+        news_loop()
+        news_thread = PeriodicThread(callback=news_loop, period=7200)
+        news_thread.start()
+
+scrapyd = ScrapydAPI("http://localhost:6800")
+if Company.objects.count() is not 20:
+    Company.objects.all().delete()
+    spider_id = scrapyd.schedule('default', 'wiki_spider')
+
+
+# thread = Util.set_interval(check_finished, 4)
+thread = PeriodicThread(callback=check_finished, period=4)
+thread.start()

@@ -1,8 +1,58 @@
 import datetime
 import json
+import threading
+import logging
 from googlefinance import getQuotes
 from pandas_datareader import data as pandata
 from .models import Company, CompanyStockValue
+
+class Util(object):
+    @staticmethod
+    def set_interval(func, sec):
+        def func_wrapper():
+            Util.set_interval(func, sec)
+            func()
+        t = threading.Timer(sec, func_wrapper)
+        t.start()
+        return t
+
+class PeriodicThread(object):
+    def __init__(self, callback=None, period=1):
+        self.callback = callback
+        self.period = period
+        self.stop = False
+        self.current_timer = None
+        self.schedule_lock = threading.Lock()
+
+    def start(self):
+        self.schedule_timer()
+
+    def run(self):
+        if self.callback is not None:
+            self.callback()
+
+    def _run(self):
+        try:
+            self.run()
+        except Exception, e:
+            logging.exception("Exception in running periodic thread")
+        finally:
+            with self.schedule_lock:
+                if not self.stop:
+                    self.schedule_timer()
+
+    def schedule_timer(self):
+        self.current_timer = threading.Timer(self.period, self._run)
+        self.current_timer.start()
+
+    def cancel(self):
+        with self.schedule_lock:
+            self.stop = True
+            if self.current_timer is not None:
+                self.current_timer.cancel()
+
+    def join(self):
+        self.current_timer.join()
 
 class CompanyUtils(object):
     @staticmethod
