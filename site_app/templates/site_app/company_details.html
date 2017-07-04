@@ -2,10 +2,15 @@
 {% load wikipedia %}
 
 {% block content %}
+<img src="{{company.logo}}">
 <h1 style='display:block;color:lightblue'>
 {{company.name}}
 </h1>
-<img src="{{company.logo}}">
+<ul>
+{% for news in company.news.all%}
+<li>{{news.date.date}} - <a href="{{news.headline_link}}">{{news.headline_text}}</a></li>
+{% endfor %}
+</ul>
 <div>
     {% wikipedia company  %}
 </div>

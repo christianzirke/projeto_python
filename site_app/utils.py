@@ -95,10 +95,6 @@ class CompanyUtils(object):
 
     @staticmethod
     def getPercentIncrement(actual_value, previous_value):
-        print
-        print type(actual_value)
-        print type(previous_value)
-        print
         if actual_value and previous_value:
             diff = actual_value - previous_value
             return round((diff * 100) / previous_value, 2)

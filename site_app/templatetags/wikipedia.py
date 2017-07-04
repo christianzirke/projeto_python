@@ -7,5 +7,5 @@ register = template.Library()
 @register.inclusion_tag('site_app/wikipedia.html')
 def wikipedia(company):
     return {
-        "wikipedia": json.loads(json.loads(company.wikipedia))
+        "wikipedia": json.loads(company.wikipedia)
     }
