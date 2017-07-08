@@ -19,8 +19,8 @@ import json
 def company_details(request, company_id):
 	company = get_object_or_404(Company, pk=company_id)
 	CompanyUtils.updateShares(company)
-	print company.news
-	return render(request, 'site_app/company_details.html', {"company": company})
+	company_news = company.news.order_by("-date")[:5]
+	return render(request, 'site_app/company_details.html', {"company": company, "company_news": company_news})
 
 @login_required
 def dashboard(request):

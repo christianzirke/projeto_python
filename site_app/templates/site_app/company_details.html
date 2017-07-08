@@ -7,7 +7,7 @@
 {{company.name}}
 </h1>
 <ul>
-{% for news in company.news.all%}
+{% for news in company_news%}
 <li>{{news.date.date}} - <a href="{{news.headline_link}}">{{news.headline_text}}</a></li>
 {% endfor %}
 </ul>
