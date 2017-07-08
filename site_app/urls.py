@@ -46,8 +46,6 @@ scrapyd = ScrapydAPI("http://localhost:6800")
 if Company.objects.count() is not 20:
     Company.objects.all().delete()
     spider_id = scrapyd.schedule('default', 'wiki_spider')
-
-
-# thread = Util.set_interval(check_finished, 4)
+    
 thread = PeriodicThread(callback=check_finished, period=4)
 thread.start()

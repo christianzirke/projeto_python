@@ -22,18 +22,26 @@ class WikiSpider(scrapy.Spider):
             logo = "https://pbs.twimg.com/media/CdlFCYmXIAAGkiH.jpg"
         else:
             logo = logo.extract_first().strip()
-            
+
         item["logo"] = logo
 
         item["nasdaq"] = infobox.xpath(".//a[contains(@href, 'http://www.nasdaq.com/symbol/')]/text()").extract_first().strip()
-        item["wikipedia"] = {"link": response.url}
+        item["wikipedia"] = {"link": response.url, "summary": wikipedia.summary(item["name"], sentences=2), "infobox": {}}
         for tr in response.xpath("//table[contains(@class, 'infobox')]/tr"):
-            table_head = tr.xpath("./th/text()").extract_first()
-            table_content = tr.xpath("./td").extract_first()
-            if table_head == "Founded" or table_head == "Headquarters" or table_head == "Founders":
-                item["wikipedia"][table_head] = table_content.replace("/wiki/", "https://en.wikipedia.org/wiki/")
+            subsidiary = tr.xpath("./th/a[contains(@title, 'Subsidiary')]")
+            key_people = tr.xpath("./th/div/text()")
 
-        item["wikipedia"]["summary"] = wikipedia.summary(item["name"], sentences=2)
+            if key_people and key_people.extract_first() == "Key people":
+                table_head = "Key people"
+            elif subsidiary:
+                table_head = subsidiary.xpath("./text()").extract_first();
+            else:
+                table_head = tr.xpath("./th/text()").extract_first();
+
+            table_content = tr.xpath("./td").extract_first()
+            if table_head == "Founded" or table_head == "Headquarters" or table_head == "Founders" or table_head == "Key people" or table_head == "Subsidiaries" or table_head == "Owner":
+                item["wikipedia"]["infobox"][table_head] = table_content.replace("/wiki/", "https://en.wikipedia.org/wiki/")
+
         item["wikipedia"] = json.dumps(item["wikipedia"])
         yield item
 

@@ -19,6 +19,7 @@ import json
 def company_details(request, company_id):
 	company = get_object_or_404(Company, pk=company_id)
 	CompanyUtils.updateShares(company)
+	print company.news
 	return render(request, 'site_app/company_details.html', {"company": company})
 
 @login_required
@@ -103,8 +104,10 @@ def get_companies_wikis(request):
 
 @login_required
 def follow_company(request, company_id):
-	request.user.site_user.companies.add(company_id)
-	request.user.site_user.save()
+	exists = request.user.site_user.companies.filter(pk=company_id).exists()
+	if not exists:
+		request.user.site_user.companies.add(company_id)
+		request.user.site_user.save()
 	return HttpResponseRedirect('/')
 
 @login_required

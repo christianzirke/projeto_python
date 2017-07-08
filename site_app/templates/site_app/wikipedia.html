@@ -1,18 +1,9 @@
 <table>
-  {% if wikipedia.Founded %}
-      <th>Founded</th>
-      {{wikipedia.Founded|safe}}
-  {% endif %}
-  {% if wikipedia.Headquarters %}
-    <tr>
-      <th>Headquarters</th>
-      {{wikipedia.Headquarters|safe}}
-    </tr>
-   {% endif %}
-  {% if wikipedia.Founders %}
-    <tr>
-      <th>Founders</th>
-      {{wikipedia.Founders|safe}}
-    </tr>
-  {% endif %}
+      {{wikipedia.summary}} <a href="{{wikipedia.link}}"> Read More</a>
+      {% for key, value in wikipedia.infobox.items %}
+        <tr>
+            <td>{{key}}</td>
+            {{value|safe}}
+            {% endfor %}
+        </tr>
 </table>
