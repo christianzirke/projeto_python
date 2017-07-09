@@ -6,6 +6,7 @@
 <h1 style='display:block;color:lightblue'>
 {{company.name}}
 </h1>
+{{company.stock}}
 <ul>
 {% for news in company_news%}
 <li>{{news.date.date}} - <a href="{{news.headline_link}}">{{news.headline_text}}</a></li>

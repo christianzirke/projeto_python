@@ -10,6 +10,7 @@ class Company(models.Model):
 	logo = models.CharField(max_length=210, blank=False)
 	nasdaq = models.CharField(max_length=10, blank=False)
 	wikipedia = models.TextField(blank=False)
+	stock = models.FloatField()
 	def __str__(self):
 		return self.name
 
