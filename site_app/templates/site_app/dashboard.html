@@ -26,15 +26,4 @@
       <br><br>
     {% endfor %}
   </div>
-
-  <script>
-    document.body.style.display = "none";
-    window.onload = function() {
-      // Previne mostrar a página antes de carregas as coisas (fotos em principal)
-      document.body.style.display = "";
-    }
-  </script>
 {% endblock %}
-
-{% extends "site_app/base.html" %}
-{% load wikipedia %}
