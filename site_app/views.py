@@ -106,8 +106,10 @@ def get_companies_wikis(request):
 def follow_company(request, company_id):
 	exists = request.user.site_user.companies.filter(pk=company_id).exists()
 	if not exists:
+		company = Company.objects.get(pk=company_id)
 		request.user.site_user.companies.add(company_id)
 		request.user.site_user.save()
+		CompanyUtils.getActualStock([company.nasdaq])
 	return HttpResponseRedirect('/')
 
 @login_required

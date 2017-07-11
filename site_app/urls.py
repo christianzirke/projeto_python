@@ -1,4 +1,3 @@
-
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 from utils import PeriodicThread, CompanyUtils
@@ -29,8 +28,6 @@ urlpatterns = [
 from scrapyd_api import ScrapydAPI
 from .models import Company
 
-spider_id = None
-
 def news_loop():
     scrapyd.schedule('default', 'news_spider')
 
@@ -39,21 +36,5 @@ def stock_loop():
         company.stock = CompanyUtils.getActualStock([company.nasdaq]);
         company.save()
 
-def check_finished():
-    status = scrapyd.job_status("default", spider_id)
-    if status is "finished" or not status:
-        thread.cancel()
-        news_loop()
-        stock_loop()
-        news_thread = PeriodicThread(callback=news_loop, period=7200)
-        news_thread.start()
-        stock_thread = PeriodicThread(callback=stock_loop, period=(15*60))
-        news_thread.start()
-
-scrapyd = ScrapydAPI("http://localhost:6800")
-if Company.objects.count() is not 20:
-    Company.objects.all().delete()
-    spider_id = scrapyd.schedule('default', 'wiki_spider')
-
-thread = PeriodicThread(callback=check_finished, period=4)
-thread.start()
+stock_thread = PeriodicThread(callback=stock_loop, period=(60))
+stock_thread.start()
