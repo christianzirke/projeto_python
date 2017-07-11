@@ -10,7 +10,7 @@ import requests
 class SiteAppScraperPipeline(object):
     def process_item(self, item, spider):
         if type(item).__name__ == "WikiBotItem":
-            requests.post('http://localhost:8000/include_company/', data=item)
+            requests.post('https://rdstock.herokuapp.com/include_company/', data=item)
         elif type(item).__name__ == "NewsBotItem":
-            requests.post('http://localhost:8000/include_news/', data=item)
+            requests.post('https://rdstock.herokuapp.com/include_news/', data=item)
         return item

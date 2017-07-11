@@ -24,7 +24,6 @@ class WikiSpider(scrapy.Spider):
             logo = logo.extract_first().strip()
 
         item["logo"] = logo
-
         item["nasdaq"] = infobox.xpath(".//a[contains(@href, 'http://www.nasdaq.com/symbol/')]/text()").extract_first().strip()
         item["wikipedia"] = {"link": response.url, "summary": wikipedia.summary(item["name"], sentences=2), "infobox": {}}
         for tr in response.xpath("//table[contains(@class, 'infobox')]/tr"):
@@ -46,7 +45,7 @@ class WikiSpider(scrapy.Spider):
         yield item
 
     def parse(self, response):
-        request = requests.get("http://localhost:8000/get_companies_wikis")
+        request = requests.get("https://rdstock.herokuapp.com/get_companies_wikis")
         urls = request.json()
         for url in urls:
             yield scrapy.Request(url, callback = self.parse_en, dont_filter=True)

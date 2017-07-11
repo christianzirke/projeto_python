@@ -14,7 +14,6 @@ class NewsSpider(scrapy.Spider):
     )
 
     def parse_news(self, response):
-        print "RESPONSE", response.url, len(response.xpath("//ul[contains(@id, 'newsSummary_c')]/li"))
         for news in response.xpath("//ul[contains(@id, 'newsSummary_c')]/li"):
             item = NewsBotItem()
             date_str = news.xpath(".//li[contains(@class, 'cr_dateStamp')]/text()").extract_first().strip()
@@ -38,7 +37,7 @@ class NewsSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        request = requests.get("http://localhost:8000/get_companies_codes")
+        request = requests.get("https://rdstock.herokuapp.com/get_companies_codes")
         codes = request.json()
         companies = []
         for company_id in codes:
