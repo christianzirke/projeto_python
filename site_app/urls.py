@@ -28,8 +28,10 @@ urlpatterns = [
 from scrapyd_api import ScrapydAPI
 from .models import Company
 
-def news_loop():
-    scrapyd.schedule('default', 'news_spider')
+def share_loop():
+    for company in Company.objects.all():
+        CompanyUtils.updateShares(company)
+        company.save()
 
 def stock_loop():
     for company in Company.objects.all():
@@ -38,3 +40,7 @@ def stock_loop():
 
 stock_thread = PeriodicThread(callback=stock_loop, period=(60))
 stock_thread.start()
+
+share_thread = PeriodicThread(callback=share_loop, period=(12 * 60 * 60))
+share_thread.start()
+share_loop()
